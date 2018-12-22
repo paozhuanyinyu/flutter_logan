@@ -1,8 +1,8 @@
 name: flutter_logan
 description: A new flutter plugin for Meituan-Dianping Logan.
-version: 0.0.1
+version: 0.0.3
 author: Kevien<renruqizi@gmail.com>
-homepage: https://paozhuanyinyu.github.io/
+homepage: https://github.com/paozhuanyinyu/flutter_logan
 
 environment:
   sdk: ">=2.0.0-dev.68.0 <3.0.0"

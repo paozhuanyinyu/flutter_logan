@@ -30,12 +30,12 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
-  void _incrementCounter() {
+  void _incrementCounter() async{
     setState(() {
       _counter++;
     });
     print("flutter count: $_counter");
-    Logan.w("count: $_counter", 1);
+    await Logan.w("count: $_counter", 1);
   }
 
   @override

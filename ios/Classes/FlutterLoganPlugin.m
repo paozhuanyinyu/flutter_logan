@@ -1,10 +1,9 @@
 #import "FlutterLoganPlugin.h"
-#import "Logan.h"
 
 @implementation FlutterLoganPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   FlutterMethodChannel* channel = [FlutterMethodChannel
-      methodChannelWithName:@"flutter_logan"
+      methodChannelWithName:@"caixin.com/flutter_logan"
             binaryMessenger:[registrar messenger]];
   FlutterLoganPlugin* instance = [[FlutterLoganPlugin alloc] initWithRegistrar];
   [registrar addMethodCallDelegate:instance channel:channel];
@@ -21,11 +20,16 @@
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
-  if ([@"logan" isEqualToString:call.method]) {
-       NSDictionary *arguments = [call arguments];
-       NSString *msg = arguments[@"msg"];
-       NSNumber *type = arguments[@"type"];
-       logan([type integerValue],msg);
+  if ([@"logan#w" isEqualToString:call.method]) {
+      NSDictionary *arguments = [call arguments];
+      NSString *msg = arguments[@"msg"];
+      NSNumber *type = arguments[@"type"];
+      logan([type integerValue],msg);
+      result(@YES);
+  }
+  else if ([@"logan#f" isEqualToString:call.method]) {
+      loganFlash();
+      result(@YES);
   }
   else if ([@"getPlatformVersion" isEqualToString:call.method]) {
     result([@"iOS " stringByAppendingString:[[UIDevice currentDevice] systemVersion]]);

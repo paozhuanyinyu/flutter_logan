@@ -1,6 +1,6 @@
 # flutter_logan
 
-A new flutter plugin project.
+A new flutter plugin for Meituan-Dianping Logan.
 
 ## Getting Started
 
