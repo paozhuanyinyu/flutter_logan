@@ -28,7 +28,7 @@
       result(@YES);
   }
   else if ([@"logan#f" isEqualToString:call.method]) {
-      loganFlash();
+      loganFlush();
       result(@YES);
   }
   else if ([@"getPlatformVersion" isEqualToString:call.method]) {

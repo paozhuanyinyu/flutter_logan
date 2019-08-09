@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
-class Logan {
+class Logan{
   static const MethodChannel _channel =
       const MethodChannel('caixin.com/flutter_logan');
 
