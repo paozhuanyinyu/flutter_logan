@@ -29,7 +29,11 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
-
+  @override
+  void initState() {
+    super.initState();
+    Logan.init("0123456789012345", "0123456789012345");
+  }
   void _incrementCounter() async{
     setState(() {
       _counter++;
