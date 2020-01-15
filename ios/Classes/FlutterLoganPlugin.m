@@ -37,6 +37,28 @@
       loganFlush();
       result(@YES);
   }
+  else if ([@"s" isEqualToString:call.method]) {
+        NSDictionary *arguments = [call arguments];
+        NSString *url = arguments[@"url"];
+        NSString *date = arguments[@"date"];
+        NSString *appId = arguments[@"appId"];
+        NSString *unionId = arguments[@"unionId"];
+        NSString *deviceId = arguments[@"deviceId"];
+        loganUpload(url,
+                date,
+                appId,
+                unionId,
+                deviceId,
+                ^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+            NSInteger *code = 0;
+            NSString *msg = @"";
+            if(error){
+                code = -1;
+                msg = error.userInfo.description;
+            }
+            result([NSDictionary dictionaryWithObjectsAndKeys:msg,@"msg", code,@"code",nil]);
+        });
+    }
   else {
     result(FlutterMethodNotImplemented);
   }
