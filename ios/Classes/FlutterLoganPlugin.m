@@ -10,8 +10,8 @@
 }
 
 - (void)initLoganKey:(NSString *)encryptKey withValue:(NSString *)encryptValue{
-    NSData *keydata = [@"0123456789012345" dataUsingEncoding:NSUTF8StringEncoding];
-    NSData *ivdata = [@"0123456789012345" dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *keydata = [encryptKey dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *ivdata = [encryptValue dataUsingEncoding:NSUTF8StringEncoding];
     uint64_t file_max = 10 * 1024 * 1024;
     // logan初始化，传入16位key，16位iv，写入文件最大大小(byte)
     loganInit(keydata, ivdata, file_max);
@@ -37,6 +37,14 @@
       loganFlush();
       result(@YES);
   }
+  else if ([@"getAllFilesInfo" isEqualToString:call.method]) {
+      result(loganAllFilesInfo());
+  }
+  else if ([@"setDebug" isEqualToString:call.method]) {
+      NSNumber *debug = [call arguments];
+      loganUseASL(debug);
+      result(@YES);
+  }
   else if ([@"s" isEqualToString:call.method]) {
         NSDictionary *arguments = [call arguments];
         NSString *url = arguments[@"url"];
@@ -50,10 +58,10 @@
                 unionId,
                 deviceId,
                 ^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-            NSInteger *code = 0;
+            NSNumber *code = [NSNumber numberWithInt:0];
             NSString *msg = @"";
             if(error){
-                code = -1;
+                code = [NSNumber numberWithInt:-1];
                 msg = error.userInfo.description;
             }
             result([NSDictionary dictionaryWithObjectsAndKeys:msg,@"msg", code,@"code",nil]);

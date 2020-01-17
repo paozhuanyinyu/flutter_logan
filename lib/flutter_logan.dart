@@ -41,15 +41,27 @@ class Logan{
   /// appId 当前应用的唯一标识,在多App时区分日志来源App
   /// unioniId 当前用户的唯一标识,用来区分日志来源用户
   /// deviceId 设备id
-  static Future<Map> s(String url,String date,String appId, String unioniId, String deviceId) async{
+  static Future<Map> s(String url,String date,String appId, String unionId, String deviceId) async{
     var argument = {
       'url': url,
       'date': date,
       'appId': appId,
-      'unioniId': unioniId,
+      'unionId': unionId,
       'deviceId': deviceId
     };
     Map map = await _channel.invokeMethod('s',argument);
     return map;
+  }
+  /// 获取文件大小
+  /// 返回一个日期为key，字节数为value的Map<String,int>集合
+  static Future<Map> getAllFilesInfo() async{
+    Map map = await _channel.invokeMethod('getAllFilesInfo');
+    return map;
+  }
+
+  /// 控制Logan sdk是否否打印日志
+  /// debug true代表打印，false代表不打印
+  static Future<bool> setDebug(bool debug) async{
+    return await _channel.invokeMethod('setDebug',debug);
   }
 }

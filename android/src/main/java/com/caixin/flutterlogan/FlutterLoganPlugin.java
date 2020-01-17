@@ -79,22 +79,26 @@ public class FlutterLoganPlugin implements MethodCallHandler {
     }else if(call.method.equals("f")){
       Logan.f();
       result.success(true);
-    } else if(call.method.equals("s")){
+    }else if(call.method.equals("s")){
       loganSendByDefault(result,
               (String)call.argument("url"),
               (String)call.argument("date"),
               (String)call.argument("appId"),
-              (String)call.argument("unioniId"),
+              (String)call.argument("unionId"),
               (String)call.argument("deviceId")
       );
-    }
-    else {
+    }else if(call.method.equals("getAllFilesInfo")){
+      result.success(Logan.getAllFilesInfo());
+    }else if(call.method.equals("setDebug")){
+      Logan.setDebug((boolean)call.arguments);
+      result.success(true);
+    } else {
       result.notImplemented();
     }
   }
 
-  private void loganSendByDefault(final Result result, String url, String date, String appId, String unioniId, String deviceId) {
-    Logan.s(url, date, appId, unioniId, deviceId, buildVersion, appVersion, new SendLogCallback() {
+  private void loganSendByDefault(final Result result, String url, String date, String appId, String unionId, String deviceId) {
+    Logan.s(url, date, appId, unionId, deviceId, buildVersion, appVersion, new SendLogCallback() {
       @Override
       public void onLogSendCompleted(int statusCode, byte[] data) {
         final String resultData = data != null ? new String(data) : "";
