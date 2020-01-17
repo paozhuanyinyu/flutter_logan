@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_logan/flutter_logan.dart';
-void main(){
+
+void main() {
   return runApp(MyApp());
 }
 
@@ -29,17 +30,33 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  bool _debug = false;
   @override
   void initState() {
     super.initState();
     Logan.init("0123456789012345", "0123456789012345");
   }
-  void _incrementCounter() async{
+
+  void _incrementCounter() async {
     setState(() {
       _counter++;
     });
-    print("flutter count: $_counter");
     await Logan.w("count: $_counter", 1);
+  }
+
+  void _changeDebugStatus(bool debug) async {
+    setState(() {
+      this._debug = debug;
+    });
+    await Logan.setDebug(debug);
+  }
+
+  void _writeData() async {
+    await Logan.w("Logan designed by MeituanDianPing", 1);
+  }
+
+  void _flush() async {
+    await Logan.f();
   }
 
   @override
@@ -51,22 +68,29 @@ class _MyHomePageState extends State<MyHomePage> {
       body: new Center(
         child: new Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            new Text(
-              'You have pushed the button this many times:',
+            Row(
+              mainAxisAlignment:MainAxisAlignment.center,
+              children: <Widget>[
+                Text('是否打印日志'),
+                Switch(
+                  value: _debug,
+                  onChanged: _changeDebugStatus,
+                ),
+              ],
             ),
-            new Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.display1,
+            RaisedButton(
+              child: Text('写入一条数据'),
+              onPressed: _writeData,
+            ),
+            RaisedButton(
+              child: Text('刷新写入文件'),
+              onPressed: _flush,
             ),
           ],
         ),
       ),
-      floatingActionButton: new FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: new Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
