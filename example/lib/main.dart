@@ -31,6 +31,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   bool _debug = false;
+  String _size = "";
   @override
   void initState() {
     super.initState();
@@ -57,6 +58,25 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _flush() async {
     await Logan.f();
+  }
+
+  void _upload() async {
+    await Logan.s("https://openlogan.inf.test.sankuai.com/logan/upload.json", "2020-01-17", "testAppId", "testUnionid", "testdDviceId");
+  }
+
+  void _showFileInfo() async {
+    Map<dynamic,dynamic> map = await Logan.getAllFilesInfo();
+    int fileSize = map["2020-01-17"];
+    print("fileSize: ${fileSize} byte");
+    setState(() {
+      if(fileSize != null){
+        _size = fileSize.toString() + "byte";
+      }else{
+        _size = "";
+      }
+    });
+
+
   }
 
   @override
@@ -88,6 +108,15 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Text('刷新写入文件'),
               onPressed: _flush,
             ),
+            RaisedButton(
+              child: Text('上传日志'),
+              onPressed: _upload,
+            ),
+            RaisedButton(
+              child: Text('展示文件大小'),
+              onPressed: _showFileInfo,
+            ),
+            Text(_size),
           ],
         ),
       ),
