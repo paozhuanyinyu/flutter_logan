@@ -3,6 +3,8 @@ package com.caixin.flutterlogan;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 import com.dianping.logan.Logan;
@@ -105,8 +107,53 @@ public class FlutterLoganPlugin implements MethodCallHandler {
         Map<String,Object> map = new HashMap<>();
         map.put("code",statusCode);
         map.put("msg",resultData);
-        result.success(map);
+        MainThreadResult mainThreadResult = new MainThreadResult(result);
+        mainThreadResult.success(map);
       }
     });
+  }
+
+  private static class MainThreadResult implements MethodChannel.Result {
+    private MethodChannel.Result result;
+    private Handler handler;
+
+    MainThreadResult(MethodChannel.Result result) {
+      this.result = result;
+      handler = new Handler(Looper.getMainLooper());
+    }
+
+    @Override
+    public void success(final Object data) {
+      handler.post(
+              new Runnable() {
+                @Override
+                public void run() {
+                  result.success(data);
+                }
+              });
+    }
+
+    @Override
+    public void error(
+            final String errorCode, final String errorMessage, final Object errorDetails) {
+      handler.post(
+              new Runnable() {
+                @Override
+                public void run() {
+                  result.error(errorCode, errorMessage, errorDetails);
+                }
+              });
+    }
+
+    @Override
+    public void notImplemented() {
+      handler.post(
+              new Runnable() {
+                @Override
+                public void run() {
+                  result.notImplemented();
+                }
+              });
+    }
   }
 }
