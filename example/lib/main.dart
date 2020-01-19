@@ -7,8 +7,13 @@ void main() {
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
+  void _initLogan() async{
+    await Logan.init("0123456789012345", "0123456789012345");
+    await Logan.setDebug(false);
+  }
   @override
   Widget build(BuildContext context) {
+    _initLogan();
     return new MaterialApp(
       title: 'Flutter Demo',
       theme: new ThemeData(
@@ -35,7 +40,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    Logan.init("0123456789012345", "0123456789012345");
   }
 
   void _incrementCounter() async {
@@ -44,14 +48,6 @@ class _MyHomePageState extends State<MyHomePage> {
     });
     await Logan.w("count: $_counter", 1);
   }
-
-  void _changeDebugStatus(bool debug) async {
-    setState(() {
-      this._debug = debug;
-    });
-    await Logan.setDebug(debug);
-  }
-
   void _writeData() async {
     await Logan.w("Logan designed by MeituanDianPing", 1);
   }
@@ -61,22 +57,29 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _upload() async {
-    await Logan.s("https://openlogan.inf.test.sankuai.com/logan/upload.json", "2020-01-17", "testAppId", "testUnionid", "testdDviceId");
+    Map<dynamic,dynamic> map = await Logan.s("https://openlogan.inf.test.sankuai.com/logan/upload.json", _getTime(), "testAppId", "testUnionid", "testdDviceId");
+    int statusCode = map['code'];
+    String msg = map['msg'];
+    print("code: $statusCode; msg: $msg");
   }
 
   void _showFileInfo() async {
     Map<dynamic,dynamic> map = await Logan.getAllFilesInfo();
-    int fileSize = map["2020-01-17"];
-    print("fileSize: ${fileSize} byte");
+    String fileSize = map[_getTime()].toString();
+    print("fileSize: $fileSize byte");
     setState(() {
       if(fileSize != null){
-        _size = fileSize.toString() + "byte";
+        _size = fileSize + "byte";
       }else{
         _size = "";
       }
     });
-
-
+  }
+  String _getTime(){
+    DateTime date = DateTime.now();
+    String time = "${date.year.toString()}-${date.month.toString().padLeft(2,'0')}-${date.day.toString().padLeft(2,'0')}";
+    print("time: $time");
+    return time;
   }
 
   @override
@@ -90,16 +93,6 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Row(
-              mainAxisAlignment:MainAxisAlignment.center,
-              children: <Widget>[
-                Text('是否打印日志'),
-                Switch(
-                  value: _debug,
-                  onChanged: _changeDebugStatus,
-                ),
-              ],
-            ),
             RaisedButton(
               child: Text('写入一条数据'),
               onPressed: _writeData,

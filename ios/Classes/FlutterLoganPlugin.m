@@ -3,7 +3,7 @@
 @implementation FlutterLoganPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   FlutterMethodChannel* channel = [FlutterMethodChannel
-      methodChannelWithName:@"caixin.com/flutter_logan"
+      methodChannelWithName:@"caixin.com.flutter/logan"
             binaryMessenger:[registrar messenger]];
   FlutterLoganPlugin* instance = [[FlutterLoganPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
@@ -42,7 +42,7 @@
   }
   else if ([@"setDebug" isEqualToString:call.method]) {
       NSNumber *debug = [call arguments];
-      loganUseASL(debug);
+      loganPrintClibLog(debug);
       result(@YES);
   }
   else if ([@"s" isEqualToString:call.method]) {

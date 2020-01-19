@@ -1,22 +1,16 @@
 package com.caixin.flutterlogan;
 
-import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
-import android.util.Log;
 import com.dianping.logan.Logan;
 import com.dianping.logan.LoganConfig;
 import com.dianping.logan.SendLogCallback;
-
 import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -27,15 +21,16 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 public class FlutterLoganPlugin implements MethodCallHandler {
   private String cachePath;
   private String path;
-  private String buildVersion;
-  private String appVersion;
+  private String versionName;
+  private String versionCode;
+
   private FlutterLoganPlugin(Registrar registrar){
     this.cachePath = registrar.context().getFilesDir().getAbsolutePath();
     this.path = registrar.context().getExternalFilesDir(null).getAbsolutePath() + File.separator + "logan_v1";
     try {
       PackageInfo pInfo = registrar.context().getPackageManager().getPackageInfo(registrar.context().getPackageName(), 0);
-      appVersion = pInfo.versionName;
-      buildVersion = String.valueOf(pInfo.versionCode);
+      versionName = pInfo.versionName;
+      versionCode = String.valueOf(pInfo.versionCode);
     } catch (PackageManager.NameNotFoundException e) {
       e.printStackTrace();
     }
@@ -50,13 +45,10 @@ public class FlutterLoganPlugin implements MethodCallHandler {
             .build();
     Logan.init(config);
   }
-  private void initLogan(String encryptKey,String encryptValue) {
-    initLogan(cachePath,path,encryptKey,encryptValue);
-  }
 
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
-    final MethodChannel channel = new MethodChannel(registrar.messenger(), "caixin.com/flutter_logan");
+    final MethodChannel channel = new MethodChannel(registrar.messenger(), "caixin.com.flutter/logan");
     channel.setMethodCallHandler(new FlutterLoganPlugin(registrar));
   }
 
@@ -67,11 +59,13 @@ public class FlutterLoganPlugin implements MethodCallHandler {
       String path = call.argument("path");
       String encryptKey = call.argument("encryptKey");
       String encryptValue = call.argument("encryptValue");
-      if(!TextUtils.isEmpty(cachePath) && !TextUtils.isEmpty(path)){
-        initLogan(cachePath,path,encryptKey,encryptValue);
-      }else{
-        initLogan(encryptKey,encryptValue);
+      if(!TextUtils.isEmpty(cachePath)){
+        this.cachePath = cachePath;
       }
+      if(!TextUtils.isEmpty(path)){
+        this.path = path;
+      }
+      initLogan(this.cachePath,this.path,encryptKey,encryptValue);
       result.success(true);
     } else if(call.method.equals("w")){
       String msg = call.argument("msg");
@@ -82,13 +76,21 @@ public class FlutterLoganPlugin implements MethodCallHandler {
       Logan.f();
       result.success(true);
     }else if(call.method.equals("s")){
-      loganSendByDefault(result,
-              (String)call.argument("url"),
-              (String)call.argument("date"),
-              (String)call.argument("appId"),
-              (String)call.argument("unionId"),
-              (String)call.argument("deviceId")
-      );
+      String url = call.argument("url");
+      String date = call.argument("date");
+      String appId = call.argument("appId");
+      String unionId = call.argument("unionId");
+      String deviceId = call.argument("deviceId");
+      String versionCode = call.argument("versionCode");
+      String versionName = call.argument("versionName");
+      if(!TextUtils.isEmpty(versionCode)){
+        this.versionCode = versionCode;
+      }
+      if(!TextUtils.isEmpty(versionName)){
+        this.versionName = versionName;
+      }
+      loganSendByDefault(result,url,date,appId,unionId,deviceId,this.versionCode,this.versionName);
+
     }else if(call.method.equals("getAllFilesInfo")){
       result.success(Logan.getAllFilesInfo());
     }else if(call.method.equals("setDebug")){
@@ -99,8 +101,8 @@ public class FlutterLoganPlugin implements MethodCallHandler {
     }
   }
 
-  private void loganSendByDefault(final Result result, String url, String date, String appId, String unionId, String deviceId) {
-    Logan.s(url, date, appId, unionId, deviceId, buildVersion, appVersion, new SendLogCallback() {
+  private void loganSendByDefault(final Result result, String url, String date, String appId, String unionId, String deviceId,String versionCode,String versionName) {
+    Logan.s(url, date, appId, unionId, deviceId, versionCode, versionName, new SendLogCallback() {
       @Override
       public void onLogSendCompleted(int statusCode, byte[] data) {
         final String resultData = data != null ? new String(data) : "";

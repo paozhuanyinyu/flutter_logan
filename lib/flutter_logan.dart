@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 
 class Logan{
   static const MethodChannel _channel =
-      const MethodChannel('caixin.com/flutter_logan');
+      const MethodChannel('caixin.com.flutter/logan');
 
   /// 初始化方法,在使用之前必须滴啊用初始化方法
   /// encryptKey key值的加密秘钥
@@ -41,13 +41,15 @@ class Logan{
   /// appId 当前应用的唯一标识,在多App时区分日志来源App
   /// unioniId 当前用户的唯一标识,用来区分日志来源用户
   /// deviceId 设备id
-  static Future<Map> s(String url,String date,String appId, String unionId, String deviceId) async{
+  static Future<Map> s(String url,String date,String appId, String unionId, String deviceId,{String versionCode,String versionName}) async{
     var argument = {
       'url': url,
       'date': date,
       'appId': appId,
       'unionId': unionId,
-      'deviceId': deviceId
+      'deviceId': deviceId,
+      'versionCode': versionCode,
+      'versionName': versionName,
     };
     Map map = await _channel.invokeMethod('s',argument);
     return map;
